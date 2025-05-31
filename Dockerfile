@@ -6,6 +6,14 @@ FROM node:20-alpine AS node
 # Install jemalloc
 RUN apk add --no-cache jemalloc
 RUN apk add --no-cache python3 py3-pip uv
+# Add build dependencies for sharp
+RUN apk add --no-cache --virtual .build-deps \
+    build-base \
+    gcc \
+    g++ \
+    make \
+    python3-dev \
+    vips-dev
 
 # Set environment variable to use jemalloc
 ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2
@@ -29,11 +37,19 @@ RUN \
     npm config set fetch-retry-maxtimeout 600000 ; \
     npm config set fetch-retries 5 ; \
     npm config set fetch-retry-mintimeout 15000 ; \
+    # Force rebuild sharp for Alpine Linux
+    npm install --no-audit --platform=linuxmusl --arch=x64 --libc=musl sharp@^0.33.5; \
     npm install --no-audit; \
     # React client build
     NODE_OPTIONS="--max-old-space-size=2048" npm run frontend; \
     npm prune --production; \
     npm cache clean --force
+
+# Remove build dependencies to reduce image size
+USER root
+RUN apk del .build-deps
+
+USER node
 
 RUN mkdir -p /app/client/public/images /app/api/logs
 
