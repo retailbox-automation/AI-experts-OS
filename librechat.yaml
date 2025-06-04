@@ -47,16 +47,16 @@ actions:
 mcpServers:
   puppeteer:
     type: stdio
-    command: npx
+    command: node
     args:
-      - -y
-      - "@modelcontextprotocol/server-puppeteer"
+      - "./mcp-puppeteer-wrapper.js"
     timeout: 300000  # 5 minutes timeout for browser operations
-    description: "Web automation and screenshot tool using Puppeteer"
+    description: "Web automation and screenshot tool using Puppeteer (macOS compatible)"
     # This server provides web browsing capabilities including:
     # - Taking screenshots of web pages
     # - Reading page content
     # - Web automation tasks
+    # - Fixed for macOS Chrome path issues
     
     # Token checking and authentication configuration
     auth:
