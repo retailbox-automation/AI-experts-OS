@@ -49,9 +49,9 @@ mcpServers:
     type: stdio
     command: node
     args:
-      - "./mcp-puppeteer-wrapper.js"
-    timeout: 300000  # 5 minutes timeout for browser operations
-    description: "Web automation and screenshot tool using Puppeteer (macOS compatible)"
+      - "./mcp-puppeteer-wrapper-simple.js"
+    timeout: 300000
+    description: "Web automation and screenshot tool using Puppeteer (modern macOS M1 compatible)"
     # This server provides web browsing capabilities including:
     # - Taking screenshots of web pages
     # - Reading page content
