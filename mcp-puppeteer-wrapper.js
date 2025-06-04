@@ -28,26 +28,37 @@ for (const chromePath of chromePaths) {
 
 if (chromeExecutable) {
   console.error(`[MCP Puppeteer Wrapper] Найден Chrome: ${chromeExecutable}`);
-  process.env.PUPPETEER_EXECUTABLE_PATH = chromeExecutable;
 } else {
   console.error('[MCP Puppeteer Wrapper] ВНИМАНИЕ: Chrome не найден в стандартных местах');
+  // Попробуем использовать системный Chrome
+  chromeExecutable = 'google-chrome';
 }
 
-// Настройки для headless режима
-process.env.PUPPETEER_ARGS = JSON.stringify([
-  '--no-sandbox',
-  '--disable-setuid-sandbox',
-  '--disable-dev-shm-usage',
-  '--disable-accelerated-2d-canvas',
-  '--no-first-run',
-  '--no-zygote',
-  '--disable-gpu',
-  '--disable-background-timer-throttling',
-  '--disable-backgrounding-occluded-windows',
-  '--disable-renderer-backgrounding'
-]);
+// Настройки запуска для MCP сервера через PUPPETEER_LAUNCH_OPTIONS
+const launchOptions = {
+  headless: true,
+  executablePath: chromeExecutable,
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-accelerated-2d-canvas',
+    '--no-first-run',
+    '--no-zygote',
+    '--disable-gpu',
+    '--disable-background-timer-throttling',
+    '--disable-backgrounding-occluded-windows',
+    '--disable-renderer-backgrounding',
+    '--disable-ipc-flooding-protection'
+  ]
+};
+
+// Устанавливаем конфигурацию через переменную окружения
+process.env.PUPPETEER_LAUNCH_OPTIONS = JSON.stringify(launchOptions);
+process.env.ALLOW_DANGEROUS = 'true'; // Разрешаем "опасные" флаги --no-sandbox и др.
 
 console.error('[MCP Puppeteer Wrapper] Настройки Puppeteer применены');
+console.error(`[MCP Puppeteer Wrapper] PUPPETEER_LAUNCH_OPTIONS: ${process.env.PUPPETEER_LAUNCH_OPTIONS}`);
 
 // Теперь запускаем оригинальный MCP сервер
 try {
